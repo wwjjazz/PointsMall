@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>个人中心</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/minireset.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_649758_nz1kuncn76z85mi.css">
+    <link rel="stylesheet" href="./css/address.css">
+</head>
+<body>
+    <div class="header">
+        <img src="./img/headerbg.jpg" alt="">
+        <div class="userinfo">
+            <img src="./img/h.jpg" alt="">
+            <p>用户的昵称</p>
+            <span>999 积分</span>
+        </div>
+    </div>
+    <div class="backbtn">
+        <i class="iconfont icon-back"></i>
+    </div>
+    <ul class="list">
+        <li><label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label><input type="text"></li>
+        <li><label>手机号码</label><input type="text"></li>
+        <li><label>详细地址</label><input type="text"></li>
+        <li><input type="button" value="提交信息"></li>
+    </ul>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="./js/common.js"></script>
+    <script>
+        var backBtn = document.querySelector(".backbtn");
+        backBtn.ontouchend = function () {
+            window.history.back();
+        }
+        var lis = document.querySelectorAll(".list input");
+        var host = "http://112.124.116.84/integral/";
+        var userinfo = document.querySelector(".userinfo");
+        
+        lis[3].addEventListener("touchend",function (e) {
+            var phoneInfo = checkPhone(lis[1].value.trim());
+            if(lis[0].value.trim()||lis[1].value.trim()||lis[2].value.trim()){
+                if(phoneInfo.state){
+                    $.ajax({
+                        url: host + "push_address",
+                        dataType: 'json',
+                        data:{
+                            name: lis[0].value.trim(),
+                            phone: lis[1].value.trim(),
+                            address: lis[2].value.trim()
+                        }
+                    }).done(function (data, status, jqXHR) {
+                        console.log(data)
+                        if (!data.state) {
+                            alert(data.message);
+                        }
+                    })
+                }else{
+                    alert(phoneInfo.message)
+                }
+            }else{
+                alert("请填写收货信息！")
+            }
+        })
+        $.ajax({
+            url: host + "get_address",
+            dataType: 'json'
+        }).done(function (data, status, jqXHR) {
+            if (data.state) {
+                var info = data.message;
+                lis[0].value = info.name;
+                lis[1].value = info.phone;
+                lis[2].value = info.address;
+            } else {
+                alert(data.message);
+            }
+        })
+        $.ajax({
+            url: host + 'get_integral',
+            dataType: 'json'
+        }).done(function (data, status, jqXHR) {
+            console.log(data)
+            if (data.state) {
+                var info = data.message;
+                userinfo.querySelector("span").innerHTML = info.integral + " 积分";
+            } else {
+                alert(data.message)
+            }
+
+        })
+    </script>
+</body>
+</html>
