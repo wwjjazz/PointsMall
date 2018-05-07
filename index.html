@@ -115,6 +115,7 @@
         var btns = document.querySelectorAll(".navbar .item");
         var userinfo = document.querySelector(".userinfo");
         var list = document.querySelector(".goods-list ul");
+        var news = document.querySelectorAll(".news span")[1];
 
         var host = "http://112.124.116.84/integral/";
         var openid = "dfsdaflfjkijfil32";
@@ -159,6 +160,7 @@
                 var info = data.message;
                 userinfo.querySelector("span").innerHTML = info.integral + " 积分";
                 localStorage.setItem("userInt", info.integral);
+                news.innerHTML = info.message;
                 userInt = Number(info.integral);
                 $.ajax({
                     url: host + 'get_lists',
@@ -202,6 +204,20 @@
             }
 
         })
+        setInterval(function () {
+            $.ajax({
+                url: host + 'get_integral',
+                dataType: 'json'
+            }).done(function (data, status, jqXHR) {
+                console.log(data)
+                if (data.state) {
+                    var info = data.message;
+                    // userinfo.querySelector("span").innerHTML = info.integral + " 积分";
+                    // localStorage.setItem("userInt", info.integral);
+                    news.innerHTML = info.message;
+                }
+            })
+        },3000)
         
         
     </script>
